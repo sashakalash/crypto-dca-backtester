@@ -1,4 +1,4 @@
-import { lazy, Suspense } from 'react'
+import { lazy, Suspense, useState, useEffect } from 'react'
 import { ThemeProvider } from '@/contexts/ThemeContext'
 import { SettingsProvider } from '@/contexts/SettingsContext'
 import { PriceDataProvider } from '@/contexts/PriceDataContext'
@@ -10,6 +10,7 @@ import { NarrativeSummary } from '@/components/backtester/NarrativeSummary'
 import { MetricGrid } from '@/components/backtester/MetricGrid'
 import { PurchasesTable } from '@/components/backtester/PurchasesTable'
 
+// Charts are lazy — deferred until after initial paint to keep FCP/TBT clean.
 const PriceChart = lazy(() =>
   import('@/components/charts/lightweight/PriceChart').then((m) => ({
     default: m.PriceChart,
@@ -56,6 +57,13 @@ function ChartSkeleton() {
 }
 
 export default function App() {
+  // Defer chart rendering until after first paint so vendor-charts/d3 chunks
+  // don't block the initial FCP / inflate TBT.
+  const [chartsReady, setChartsReady] = useState(false)
+  useEffect(() => {
+    setChartsReady(true)
+  }, [])
+
   return (
     <ThemeProvider>
       <SettingsProvider>
@@ -74,34 +82,38 @@ export default function App() {
                   <div className="space-y-6">
                     <NarrativeSummary />
                     <MetricGrid />
-                    <Suspense fallback={<ChartSkeleton />}>
-                      <PriceChart />
-                    </Suspense>
-                    <div className="grid gap-6 xl:grid-cols-2">
-                      <Suspense fallback={<ChartSkeleton />}>
-                        <PortfolioValueArea />
-                      </Suspense>
-                      <Suspense fallback={<ChartSkeleton />}>
-                        <StrategyComparisonBar />
-                      </Suspense>
-                    </div>
-                    <Suspense fallback={<ChartSkeleton />}>
-                      <CumulativeChart />
-                    </Suspense>
-                    <div className="grid gap-6 xl:grid-cols-2">
-                      <Suspense fallback={<ChartSkeleton />}>
-                        <DrawdownWaterfall />
-                      </Suspense>
-                      <Suspense fallback={<ChartSkeleton />}>
-                        <ReturnDistribution />
-                      </Suspense>
-                    </div>
-                    <Suspense fallback={<ChartSkeleton />}>
-                      <PurchaseScatter />
-                    </Suspense>
-                    <Suspense fallback={<ChartSkeleton />}>
-                      <ReturnHeatmap />
-                    </Suspense>
+                    {chartsReady && (
+                      <>
+                        <Suspense fallback={<ChartSkeleton />}>
+                          <PriceChart />
+                        </Suspense>
+                        <div className="grid gap-6 xl:grid-cols-2">
+                          <Suspense fallback={<ChartSkeleton />}>
+                            <PortfolioValueArea />
+                          </Suspense>
+                          <Suspense fallback={<ChartSkeleton />}>
+                            <StrategyComparisonBar />
+                          </Suspense>
+                        </div>
+                        <Suspense fallback={<ChartSkeleton />}>
+                          <CumulativeChart />
+                        </Suspense>
+                        <div className="grid gap-6 xl:grid-cols-2">
+                          <Suspense fallback={<ChartSkeleton />}>
+                            <DrawdownWaterfall />
+                          </Suspense>
+                          <Suspense fallback={<ChartSkeleton />}>
+                            <ReturnDistribution />
+                          </Suspense>
+                        </div>
+                        <Suspense fallback={<ChartSkeleton />}>
+                          <PurchaseScatter />
+                        </Suspense>
+                        <Suspense fallback={<ChartSkeleton />}>
+                          <ReturnHeatmap />
+                        </Suspense>
+                      </>
+                    )}
                     <PurchasesTable />
                   </div>
                 </div>

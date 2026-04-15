@@ -1,4 +1,4 @@
-import { useEffect, useRef, useMemo, memo } from 'react'
+import { useEffect, useRef, useMemo } from 'react'
 import {
   createChart,
   createSeriesMarkers,
@@ -20,7 +20,7 @@ function toChartTime(ts: number): Time {
   return (ts / 1000) as Time
 }
 
-export const PriceChart = memo(function PriceChart() {
+export function PriceChart() {
   const chartRef = useRef<HTMLDivElement>(null)
   const chartInstance = useRef<IChartApi | null>(null)
   const seriesRef = useRef<ISeriesApi<'Baseline'> | null>(null)
@@ -160,4 +160,4 @@ export const PriceChart = memo(function PriceChart() {
       </CardContent>
     </Card>
   )
-})
+}
