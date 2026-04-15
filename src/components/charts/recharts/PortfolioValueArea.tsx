@@ -213,8 +213,8 @@ export const PortfolioValueArea = memo(function PortfolioValueArea() {
         const d = !b || Math.abs(ts - a.timestamp) <= Math.abs(ts - b.timestamp) ? a : b
 
         xhair
-          .attr('x1', state.x(d.timestamp))
-          .attr('x2', state.x(d.timestamp))
+          .attr('x1', state.x(d.timestamp) as number)
+          .attr('x2', state.x(d.timestamp) as number)
           .style('display', null)
 
         const tip = tooltipRef.current
