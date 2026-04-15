@@ -30,7 +30,7 @@ export const StrategyComparisonBar = memo(function StrategyComparisonBar() {
   const svgRef = useRef<SVGSVGElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const { width } = useResizeObserver(containerRef)
-  const { results } = useResults()
+  const results = useResults()
 
   const data = useMemo((): BarRow[] => {
     return Array.from(results.entries()).map(([type, result]) => ({

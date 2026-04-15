@@ -4,7 +4,7 @@ import { MetricCard } from './MetricCard'
 import { formatCurrency, formatPercent } from '@/utils/formatters'
 
 export function MetricGrid() {
-  const { results } = useResults()
+  const results = useResults()
 
   const dcaMetrics = useMemo(() => {
     const dca = results.get('dca')

@@ -4,7 +4,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { formatCurrency, formatDate, formatCrypto } from '@/utils/formatters'
 
 export const PurchasesTable = memo(function PurchasesTable() {
-  const { results } = useResults()
+  const results = useResults()
 
   const purchases = useMemo(() => {
     const dca = results.get('dca') ?? results.values().next().value

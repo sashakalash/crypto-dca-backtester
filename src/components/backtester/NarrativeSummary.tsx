@@ -1,8 +1,8 @@
-import { useResults } from '@/contexts/ResultsContext'
+import { useNarrativeSummary } from '@/contexts/ResultsContext'
 import { Card } from '@/components/ui/card'
 
 export function NarrativeSummary() {
-  const { narrativeSummary } = useResults()
+  const narrativeSummary = useNarrativeSummary()
 
   if (!narrativeSummary) return null
 

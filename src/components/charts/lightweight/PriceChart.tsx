@@ -26,7 +26,7 @@ export function PriceChart() {
   const seriesRef = useRef<ISeriesApi<'Baseline'> | null>(null)
   const markersRef = useRef<ISeriesMarkersPluginApi<Time> | null>(null)
   const { priceData } = usePriceData()
-  const { results } = useResults()
+  const results = useResults()
 
   const dcaResult = useMemo(() => {
     return results.get('dca') ?? results.values().next().value ?? null
@@ -117,6 +117,8 @@ export function PriceChart() {
       seriesRef.current = null
       markersRef.current = null
     }
+    // NOTE: Intentionally empty deps array to create chart once and reuse it.
+    // chartRef, chartInstance, seriesRef are stable refs that don't trigger re-creation.
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {

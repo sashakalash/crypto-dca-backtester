@@ -59,7 +59,7 @@ export const PortfolioValueArea = memo(function PortfolioValueArea() {
   } | null>(null)
 
   const { width } = useResizeObserver(containerRef)
-  const { results } = useResults()
+  const results = useResults()
 
   const { chartData, activeStrategies } = useMemo(() => {
     const entries = Array.from(results.entries())

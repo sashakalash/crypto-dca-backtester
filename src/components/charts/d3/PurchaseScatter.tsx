@@ -17,7 +17,7 @@ export const PurchaseScatter = memo(function PurchaseScatter() {
   const containerRef = useRef<HTMLDivElement>(null)
   const { width } = useResizeObserver(containerRef)
   const { priceData } = usePriceData()
-  const { results } = useResults()
+  const results = useResults()
 
   const dcaResult = useMemo(() => {
     return results.get('dca') ?? results.values().next().value ?? null

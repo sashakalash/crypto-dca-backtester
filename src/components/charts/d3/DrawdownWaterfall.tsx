@@ -22,7 +22,7 @@ export const DrawdownWaterfall = memo(function DrawdownWaterfall() {
   const svgRef = useRef<SVGSVGElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const { width } = useResizeObserver(containerRef)
-  const { results } = useResults()
+  const results = useResults()
 
   const drawdownData = useMemo((): DrawdownPoint[] => {
     const dca = results.get('dca') ?? results.values().next().value

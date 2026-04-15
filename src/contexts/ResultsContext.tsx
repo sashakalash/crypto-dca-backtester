@@ -12,13 +12,9 @@ const STRATEGY_LABELS: Record<StrategyType, string> = {
   smartDca: 'Smart DCA',
 }
 
-interface ResultsContextValue {
-  results: Map<StrategyType, BacktestResult>
-  narrativeSummary: string | null
-  isReady: boolean
-}
-
-const ResultsContext = createContext<ResultsContextValue | null>(null)
+const ResultsMapContext = createContext<Map<StrategyType, BacktestResult> | null>(null)
+const NarrativeSummaryContext = createContext<string | null>(null)
+const IsReadyContext = createContext<boolean>(false)
 
 export function ResultsProvider({ children }: { children: ReactNode }) {
   const { settings } = useSettings()
@@ -76,16 +72,30 @@ export function ResultsProvider({ children }: { children: ReactNode }) {
 
   const isReady = !isLoading && results.size > 0
 
-  const value = useMemo(
-    () => ({ results, narrativeSummary, isReady }),
-    [results, narrativeSummary, isReady]
+  return (
+    <ResultsMapContext value={results}>
+      <NarrativeSummaryContext value={narrativeSummary}>
+        <IsReadyContext value={isReady}>{children}</IsReadyContext>
+      </NarrativeSummaryContext>
+    </ResultsMapContext>
   )
-
-  return <ResultsContext value={value}>{children}</ResultsContext>
 }
 
 export function useResults() {
-  const ctx = useContext(ResultsContext)
+  const ctx = useContext(ResultsMapContext)
   if (!ctx) throw new Error('useResults must be used within ResultsProvider')
+  return ctx
+}
+
+export function useNarrativeSummary() {
+  const ctx = useContext(NarrativeSummaryContext)
+  if (ctx === undefined)
+    throw new Error('useNarrativeSummary must be used within ResultsProvider')
+  return ctx
+}
+
+export function useIsReady() {
+  const ctx = useContext(IsReadyContext)
+  if (ctx === undefined) throw new Error('useIsReady must be used within ResultsProvider')
   return ctx
 }

@@ -15,7 +15,7 @@ export const ReturnDistribution = memo(function ReturnDistribution() {
   const svgRef = useRef<SVGSVGElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const { width } = useResizeObserver(containerRef)
-  const { results } = useResults()
+  const results = useResults()
 
   const returns = useMemo(() => {
     const dca = results.get('dca') ?? results.values().next().value

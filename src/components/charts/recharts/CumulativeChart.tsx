@@ -56,7 +56,7 @@ export const CumulativeChart = memo(function CumulativeChart() {
   } | null>(null)
 
   const { width } = useResizeObserver(containerRef)
-  const { results } = useResults()
+  const results = useResults()
 
   const chartData = useMemo((): DataRow[] => {
     const dca = results.get('dca') ?? results.values().next().value
