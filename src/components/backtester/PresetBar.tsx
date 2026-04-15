@@ -1,9 +1,10 @@
 import { Button } from '@/components/ui/button'
 import { PRESETS } from '@/data/presets'
-import { useSettings } from '@/contexts/SettingsContext'
+import { useSettings, useSettingsUpdate } from '@/contexts/SettingsContext'
 
 export function PresetBar() {
-  const { settings, applyPreset } = useSettings()
+  const settings = useSettings()
+  const { applyPreset } = useSettingsUpdate()
 
   return (
     <div className="flex flex-wrap gap-2">

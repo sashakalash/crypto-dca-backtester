@@ -20,7 +20,7 @@ interface PriceDataContextValue {
 const PriceDataContext = createContext<PriceDataContextValue | null>(null)
 
 export function PriceDataProvider({ children }: { children: ReactNode }) {
-  const { settings } = useSettings()
+  const settings = useSettings()
   const [priceData, setPriceData] = useState<PricePoint[] | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)

@@ -13,8 +13,7 @@ interface Settings {
   activePresetId: string | null
 }
 
-interface SettingsContextValue {
-  settings: Settings
+interface SettingsFunctionsValue {
   updateSettings: (partial: Partial<Settings>) => void
   applyPreset: (preset: Preset) => void
 }
@@ -32,7 +31,8 @@ const defaultSettings: Settings = {
   activePresetId: defaultPreset.id,
 }
 
-const SettingsContext = createContext<SettingsContextValue | null>(null)
+const SettingsContext = createContext<Settings | null>(null)
+const SettingsFunctionsContext = createContext<SettingsFunctionsValue | null>(null)
 
 export function SettingsProvider({ children }: { children: ReactNode }) {
   const [settings, setSettings] = useState<Settings>(defaultSettings)
@@ -55,8 +55,10 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
   }, [])
 
   return (
-    <SettingsContext value={{ settings, updateSettings, applyPreset }}>
-      {children}
+    <SettingsContext value={settings}>
+      <SettingsFunctionsContext value={{ updateSettings, applyPreset }}>
+        {children}
+      </SettingsFunctionsContext>
     </SettingsContext>
   )
 }
@@ -64,5 +66,11 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
 export function useSettings() {
   const ctx = useContext(SettingsContext)
   if (!ctx) throw new Error('useSettings must be used within SettingsProvider')
+  return ctx
+}
+
+export function useSettingsUpdate() {
+  const ctx = useContext(SettingsFunctionsContext)
+  if (!ctx) throw new Error('useSettingsUpdate must be used within SettingsProvider')
   return ctx
 }

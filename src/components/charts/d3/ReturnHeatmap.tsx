@@ -18,7 +18,7 @@ export const ReturnHeatmap = memo(function ReturnHeatmap() {
   const svgRef = useRef<SVGSVGElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const { width } = useResizeObserver(containerRef)
-  const { settings } = useSettings()
+  const settings = useSettings()
   const { priceData } = usePriceData()
 
   const sensitivityData = useMemo(() => {

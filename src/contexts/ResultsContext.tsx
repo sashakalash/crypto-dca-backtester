@@ -17,7 +17,7 @@ const NarrativeSummaryContext = createContext<string | null>(null)
 const IsReadyContext = createContext<boolean>(false)
 
 export function ResultsProvider({ children }: { children: ReactNode }) {
-  const { settings } = useSettings()
+  const settings = useSettings()
   const { priceData, isLoading } = usePriceData()
 
   const results = useMemo(() => {
