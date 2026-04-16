@@ -48,27 +48,25 @@ export function ResultsProvider({ children }: { children: ReactNode }) {
     return map
   }, [priceData, settings])
 
-  const narrativeSummary = useMemo(() => {
-    const dcaResult = results.get('dca')
-    if (!dcaResult) return null
+  const dcaResult = results.get('dca')
+  let narrativeSummary: string | null = null
 
+  if (dcaResult) {
     const { metrics } = dcaResult
     const lumpResult = results.get('lumpSum')
 
-    let summary = `Investing ${formatCurrency(settings.amount)} ${settings.interval} into ${settings.coinId === 'bitcoin' ? 'Bitcoin' : settings.coinId === 'ethereum' ? 'Ethereum' : settings.coinId}, you would have invested ${formatCurrency(metrics.totalInvested)} across ${metrics.numberOfPurchases} purchases. Your portfolio would be worth ${formatCurrency(metrics.finalValue)} — a ${formatPercent(metrics.totalReturnPercent)} return.`
+    narrativeSummary = `Investing ${formatCurrency(settings.amount)} ${settings.interval} into ${settings.coinId === 'bitcoin' ? 'Bitcoin' : settings.coinId === 'ethereum' ? 'Ethereum' : settings.coinId}, you would have invested ${formatCurrency(metrics.totalInvested)} across ${metrics.numberOfPurchases} purchases. Your portfolio would be worth ${formatCurrency(metrics.finalValue)} — a ${formatPercent(metrics.totalReturnPercent)} return.`
 
     if (lumpResult) {
       const diff = metrics.totalReturnPercent - lumpResult.metrics.totalReturnPercent
       const better = diff > 0 ? 'outperformed' : 'underperformed'
-      summary += ` DCA ${better} lump sum by ${formatPercent(Math.abs(diff))}.`
+      narrativeSummary += ` DCA ${better} lump sum by ${formatPercent(Math.abs(diff))}.`
     }
 
     if (metrics.maxDrawdown > 0) {
-      summary += ` Worst drawdown: ${formatPercent(metrics.maxDrawdown)}.`
+      narrativeSummary += ` Worst drawdown: ${formatPercent(metrics.maxDrawdown)}.`
     }
-
-    return summary
-  }, [results, settings])
+  }
 
   const isReady = !isLoading && results.size > 0
 

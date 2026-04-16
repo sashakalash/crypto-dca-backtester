@@ -8,9 +8,16 @@ import { cn } from '@/lib/utils'
 interface DatePickerProps {
   value: string
   onChange: (value: string) => void
+  fromYear?: number
+  toYear?: number
 }
 
-export function DatePicker({ value, onChange }: DatePickerProps) {
+export function DatePicker({
+  value,
+  onChange,
+  fromYear = 2010,
+  toYear = new Date().getFullYear(),
+}: DatePickerProps) {
   const defaultClassNames = getDefaultClassNames()
   const selected = value ? parseISO(value) : undefined
 
@@ -39,15 +46,54 @@ export function DatePicker({ value, onChange }: DatePickerProps) {
           align="start"
           sideOffset={4}
         >
+          <style>{`
+            .rdp-dropdown select {
+              appearance: none;
+              background: transparent;
+              border: 1px solid hsl(var(--input));
+              border-radius: 6px;
+              color: hsl(var(--foreground));
+              cursor: pointer;
+              font-size: 0.8125rem;
+              font-weight: 500;
+              padding: 2px 24px 2px 8px;
+              outline: none;
+            }
+            .rdp-dropdown select:focus {
+              box-shadow: 0 0 0 2px hsl(var(--ring));
+            }
+            .rdp-dropdown select:hover {
+              background: hsl(var(--muted) / 0.5);
+            }
+            .rdp-dropdown select option {
+              background: hsl(var(--card));
+              color: hsl(var(--foreground));
+            }
+            .rdp-dropdown_root {
+              display: flex;
+              align-items: center;
+              gap: 4px;
+              position: relative;
+            }
+            .rdp-dropdown_root svg {
+              pointer-events: none;
+              position: absolute;
+              right: 6px;
+              top: 50%;
+              transform: translateY(-50%);
+            }
+          `}</style>
           <DayPicker
             mode="single"
             selected={selected}
             onSelect={handleSelect}
             defaultMonth={selected}
+            captionLayout="dropdown"
+            startMonth={new Date(fromYear, 0)}
+            endMonth={new Date(toYear, 11)}
             classNames={{
               root: cn(defaultClassNames.root, 'text-foreground'),
-              month_caption:
-                'flex items-center justify-center py-1 mb-2 font-medium text-sm',
+              month_caption: 'flex items-center justify-center py-1 mb-2 gap-1',
               nav: 'flex items-center gap-1',
               button_previous: cn(
                 defaultClassNames.button_previous,
