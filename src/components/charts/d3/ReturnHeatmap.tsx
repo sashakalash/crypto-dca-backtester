@@ -1,4 +1,4 @@
-import { useEffect, useRef, useMemo, memo } from 'react'
+import { useEffect, useRef, useState, memo } from 'react'
 import { select } from 'd3-selection'
 import { scaleBand, scaleDiverging, scaleLinear } from 'd3-scale'
 import { max } from 'd3-array'
@@ -6,7 +6,6 @@ import { interpolateRdYlGn } from 'd3-scale-chromatic'
 import { axisBottom, axisLeft, axisRight } from 'd3-axis'
 import { useSettings } from '@/contexts/SettingsContext'
 import { usePriceData } from '@/contexts/PriceDataContext'
-import { runSensitivityAnalysis } from '@/engine/sensitivity'
 import { useResizeObserver } from '@/hooks/useResizeObserver'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import type { StrategyConfig } from '@/engine/types'
@@ -17,12 +16,40 @@ const MARGIN = { top: 20, right: 80, bottom: 50, left: 70 }
 export const ReturnHeatmap = memo(function ReturnHeatmap() {
   const svgRef = useRef<SVGSVGElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
+  const workerRef = useRef<Worker | null>(null)
   const { width } = useResizeObserver(containerRef)
   const settings = useSettings()
   const { priceData } = usePriceData()
+  const [sensitivityData, setSensitivityData] = useState<any[]>([])
 
-  const sensitivityData = useMemo(() => {
-    if (!priceData) return []
+  // Initialize worker once
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+
+    workerRef.current = new Worker(
+      new URL('@/workers/sensitivity.worker.ts', import.meta.url),
+      { type: 'module' }
+    )
+
+    const handleMessage = (event: MessageEvent) => {
+      if (event.data.success) {
+        setSensitivityData(event.data.data)
+      }
+    }
+
+    workerRef.current.addEventListener('message', handleMessage)
+
+    return () => {
+      workerRef.current?.removeEventListener('message', handleMessage)
+    }
+  }, [])
+
+  // Trigger sensitivity analysis when data or settings change
+  useEffect(() => {
+    if (!priceData) {
+      setSensitivityData([])
+      return
+    }
 
     const config: StrategyConfig = {
       type: 'dca',
@@ -32,13 +59,13 @@ export const ReturnHeatmap = memo(function ReturnHeatmap() {
       feeRate: settings.feeRate,
     }
 
-    return runSensitivityAnalysis(
+    workerRef.current?.postMessage({
       config,
       priceData,
-      new Date(settings.startDate),
-      new Date(settings.endDate),
-      2
-    )
+      startDate: settings.startDate,
+      endDate: settings.endDate,
+      param: 2,
+    })
   }, [priceData, settings])
 
   useEffect(() => {
