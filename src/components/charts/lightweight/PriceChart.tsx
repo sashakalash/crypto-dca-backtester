@@ -1,4 +1,4 @@
-import { useEffect, useRef, useMemo } from 'react'
+import { useEffect, useRef } from 'react'
 import {
   createChart,
   createSeriesMarkers,
@@ -28,30 +28,22 @@ export function PriceChart() {
   const { priceData } = usePriceData()
   const results = useResults()
 
-  const dcaResult = useMemo(() => {
-    return results.get('dca') ?? results.values().next().value ?? null
-  }, [results])
-
+  const dcaResult = results.get('dca') ?? results.values().next().value ?? null
   const avgCostBasis = dcaResult?.metrics.averageCostBasis ?? 0
 
-  const chartData = useMemo(() => {
-    if (!priceData) return []
-    return priceData.map((p) => ({
-      time: toChartTime(p.timestamp),
-      value: p.price,
-    }))
-  }, [priceData])
+  const chartData = priceData
+    ? priceData.map((p) => ({ time: toChartTime(p.timestamp), value: p.price }))
+    : []
 
-  const markers: SeriesMarker<Time>[] = useMemo(() => {
-    if (!dcaResult) return []
-    return dcaResult.purchases.map((p) => ({
-      time: toChartTime(p.date),
-      position: 'belowBar' as const,
-      color: p.price < avgCostBasis ? '#22c55e' : '#ef4444',
-      shape: 'circle' as const,
-      size: 0.5,
-    }))
-  }, [dcaResult, avgCostBasis])
+  const markers: SeriesMarker<Time>[] = dcaResult
+    ? dcaResult.purchases.map((p) => ({
+        time: toChartTime(p.date),
+        position: 'belowBar' as const,
+        color: p.price < avgCostBasis ? '#22c55e' : '#ef4444',
+        shape: 'circle' as const,
+        size: 0.5,
+      }))
+    : []
 
   useEffect(() => {
     if (!chartRef.current) return

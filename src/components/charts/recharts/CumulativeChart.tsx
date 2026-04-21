@@ -1,4 +1,4 @@
-import { useEffect, useRef, useMemo, memo } from 'react'
+import { useEffect, useRef, memo } from 'react'
 import { select, pointer } from 'd3-selection'
 import { scaleTime, scaleLinear } from 'd3-scale'
 import { max, bisector } from 'd3-array'
@@ -58,15 +58,14 @@ export const CumulativeChart = memo(function CumulativeChart() {
   const { width } = useResizeObserver(containerRef)
   const results = useResults()
 
-  const chartData = useMemo((): DataRow[] => {
-    const dca = results.get('dca') ?? results.values().next().value
-    if (!dca) return []
-    return dca.timeline.map((pt) => ({
-      timestamp: pt.timestamp,
-      invested: pt.totalInvested,
-      value: pt.portfolioValue,
-    }))
-  }, [results])
+  const dca0 = results.get('dca') ?? results.values().next().value
+  const chartData: DataRow[] = dca0
+    ? dca0.timeline.map((pt) => ({
+        timestamp: pt.timestamp,
+        invested: pt.totalInvested,
+        value: pt.portfolioValue,
+      }))
+    : []
 
   useEffect(() => {
     if (!svgRef.current || width === 0 || chartData.length === 0) return

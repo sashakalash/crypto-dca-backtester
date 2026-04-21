@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useCallback, type ReactNode } from 'react'
+import { createContext, useContext, useState, type ReactNode } from 'react'
 import type { InvestmentInterval, StrategyType } from '@/engine/types'
 import { PRESETS, type Preset } from '@/data/presets'
 
@@ -37,11 +37,11 @@ const SettingsFunctionsContext = createContext<SettingsFunctionsValue | null>(nu
 export function SettingsProvider({ children }: { children: ReactNode }) {
   const [settings, setSettings] = useState<Settings>(defaultSettings)
 
-  const updateSettings = useCallback((partial: Partial<Settings>) => {
+  const updateSettings = (partial: Partial<Settings>) => {
     setSettings((prev) => ({ ...prev, ...partial, activePresetId: null }))
-  }, [])
+  }
 
-  const applyPreset = useCallback((preset: Preset) => {
+  const applyPreset = (preset: Preset) => {
     setSettings({
       coinId: preset.coinId,
       amount: preset.amount,
@@ -52,7 +52,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
       activeStrategies: preset.strategies,
       activePresetId: preset.id,
     })
-  }, [])
+  }
 
   return (
     <SettingsContext value={settings}>

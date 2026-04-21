@@ -1,4 +1,4 @@
-import { useEffect, useRef, useMemo, memo } from 'react'
+import { useEffect, useRef, memo } from 'react'
 import { select, pointer } from 'd3-selection'
 import { scaleTime, scaleLinear } from 'd3-scale'
 import { max, bisector } from 'd3-array'
@@ -61,18 +61,17 @@ export const PortfolioValueArea = memo(function PortfolioValueArea() {
   const { width } = useResizeObserver(containerRef)
   const results = useResults()
 
-  const { chartData, activeStrategies } = useMemo(() => {
-    const entries = Array.from(results.entries())
-    if (entries.length === 0)
-      return { chartData: [] as DataRow[], activeStrategies: [] as StrategyType[] }
-    const [, first] = entries[0]
-    const data: DataRow[] = first.timeline.map((pt, i) => {
-      const row: DataRow = { timestamp: pt.timestamp, invested: pt.totalInvested }
-      for (const [type, res] of entries) row[type] = res.timeline[i]?.portfolioValue ?? 0
-      return row
-    })
-    return { chartData: data, activeStrategies: entries.map(([t]) => t) }
-  }, [results])
+  const entries = Array.from(results.entries())
+  const [, first] = entries[0] ?? []
+  const chartData: DataRow[] = first
+    ? first.timeline.map((pt, i) => {
+        const row: DataRow = { timestamp: pt.timestamp, invested: pt.totalInvested }
+        for (const [type, res] of entries)
+          row[type] = res.timeline[i]?.portfolioValue ?? 0
+        return row
+      })
+    : []
+  const activeStrategies: StrategyType[] = entries.map(([t]) => t)
 
   useEffect(() => {
     if (!svgRef.current || width === 0 || chartData.length === 0) return

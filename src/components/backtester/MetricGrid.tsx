@@ -1,4 +1,3 @@
-import { useMemo } from 'react'
 import { useResults } from '@/contexts/ResultsContext'
 import { MetricCard } from './MetricCard'
 import { formatCurrency, formatPercent } from '@/utils/formatters'
@@ -6,18 +5,9 @@ import { formatCurrency, formatPercent } from '@/utils/formatters'
 export function MetricGrid() {
   const results = useResults()
 
-  const dcaMetrics = useMemo(() => {
-    const dca = results.get('dca')
-    if (!dca) {
-      const first = results.values().next().value
-      return first?.metrics ?? null
-    }
-    return dca.metrics
-  }, [results])
-
-  const lumpSumMetrics = useMemo(() => {
-    return results.get('lumpSum')?.metrics ?? null
-  }, [results])
+  const dca = results.get('dca')
+  const dcaMetrics = dca ? dca.metrics : (results.values().next().value?.metrics ?? null)
+  const lumpSumMetrics = results.get('lumpSum')?.metrics ?? null
 
   if (!dcaMetrics) return null
 

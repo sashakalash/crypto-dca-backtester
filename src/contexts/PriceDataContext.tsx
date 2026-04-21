@@ -1,11 +1,4 @@
-import {
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-  useMemo,
-  type ReactNode,
-} from 'react'
+import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
 import type { PricePoint } from '@/engine/types'
 import { useSettings } from './SettingsContext'
 import { loadBundledPriceData } from '@/data/staticLoader'
@@ -51,12 +44,11 @@ export function PriceDataProvider({ children }: { children: ReactNode }) {
     }
   }, [settings.coinId])
 
-  const value = useMemo(
-    () => ({ priceData, isLoading, error, dataSource }),
-    [priceData, isLoading, error, dataSource]
+  return (
+    <PriceDataContext value={{ priceData, isLoading, error, dataSource }}>
+      {children}
+    </PriceDataContext>
   )
-
-  return <PriceDataContext value={value}>{children}</PriceDataContext>
 }
 
 export function usePriceData() {

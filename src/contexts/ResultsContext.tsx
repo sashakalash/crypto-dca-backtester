@@ -1,4 +1,4 @@
-import { createContext, useContext, useMemo, type ReactNode } from 'react'
+import { createContext, useContext, type ReactNode } from 'react'
 import type { BacktestResult, StrategyConfig, StrategyType } from '@/engine/types'
 import { useSettings } from './SettingsContext'
 import { usePriceData } from './PriceDataContext'
@@ -20,8 +20,9 @@ export function ResultsProvider({ children }: { children: ReactNode }) {
   const settings = useSettings()
   const { priceData, isLoading } = usePriceData()
 
-  const results = useMemo(() => {
-    if (!priceData || priceData.length === 0) return new Map()
+  const results = (() => {
+    if (!priceData || priceData.length === 0)
+      return new Map<StrategyType, BacktestResult>()
 
     const map = new Map<StrategyType, BacktestResult>()
     const startDate = new Date(settings.startDate)
@@ -46,7 +47,7 @@ export function ResultsProvider({ children }: { children: ReactNode }) {
     }
 
     return map
-  }, [priceData, settings])
+  })()
 
   const dcaResult = results.get('dca')
   let narrativeSummary: string | null = null
