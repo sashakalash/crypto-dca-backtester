@@ -1,4 +1,4 @@
-import { useMemo, memo } from 'react'
+import { memo } from 'react'
 import { useResults } from '@/contexts/ResultsContext'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { formatCurrency, formatDate, formatCrypto } from '@/utils/formatters'
@@ -6,10 +6,8 @@ import { formatCurrency, formatDate, formatCrypto } from '@/utils/formatters'
 export const PurchasesTable = memo(function PurchasesTable() {
   const results = useResults()
 
-  const purchases = useMemo(() => {
-    const dca = results.get('dca') ?? results.values().next().value
-    return dca?.purchases ?? []
-  }, [results])
+  const dca = results.get('dca') ?? results.values().next().value
+  const purchases = dca?.purchases ?? []
 
   if (purchases.length === 0) return null
 

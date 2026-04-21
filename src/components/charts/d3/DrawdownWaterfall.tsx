@@ -1,4 +1,4 @@
-import { useEffect, useRef, useMemo, memo } from 'react'
+import { useEffect, useRef, memo } from 'react'
 import { select } from 'd3-selection'
 import { scaleTime, scaleLinear } from 'd3-scale'
 import { extent, min } from 'd3-array'
@@ -24,22 +24,15 @@ export const DrawdownWaterfall = memo(function DrawdownWaterfall() {
   const { width } = useResizeObserver(containerRef)
   const results = useResults()
 
-  const drawdownData = useMemo((): DrawdownPoint[] => {
-    const dca = results.get('dca') ?? results.values().next().value
-    if (!dca) return []
-
-    let peak = 0
-    return dca.timeline.map((point) => {
-      if (point.portfolioValue > peak) peak = point.portfolioValue
-      const drawdown = peak > 0 ? ((peak - point.portfolioValue) / peak) * -100 : 0
-      return {
-        timestamp: point.timestamp,
-        drawdown,
-        peak,
-        value: point.portfolioValue,
-      }
-    })
-  }, [results])
+  const dca0 = results.get('dca') ?? results.values().next().value
+  let peak = 0
+  const drawdownData: DrawdownPoint[] = dca0
+    ? dca0.timeline.map((point) => {
+        if (point.portfolioValue > peak) peak = point.portfolioValue
+        const drawdown = peak > 0 ? ((peak - point.portfolioValue) / peak) * -100 : 0
+        return { timestamp: point.timestamp, drawdown, peak, value: point.portfolioValue }
+      })
+    : []
 
   useEffect(() => {
     if (!svgRef.current || width === 0 || drawdownData.length === 0) return

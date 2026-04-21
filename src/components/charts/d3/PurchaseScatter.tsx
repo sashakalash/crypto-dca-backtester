@@ -1,4 +1,4 @@
-import { useEffect, useRef, useMemo, memo } from 'react'
+import { useEffect, useRef, memo } from 'react'
 import { select } from 'd3-selection'
 import { scaleTime, scaleLinear, scaleSqrt } from 'd3-scale'
 import { min, max } from 'd3-array'
@@ -19,9 +19,7 @@ export const PurchaseScatter = memo(function PurchaseScatter() {
   const { priceData } = usePriceData()
   const results = useResults()
 
-  const dcaResult = useMemo(() => {
-    return results.get('dca') ?? results.values().next().value ?? null
-  }, [results])
+  const dcaResult = results.get('dca') ?? results.values().next().value ?? null
 
   useEffect(() => {
     if (!svgRef.current || width === 0 || !priceData || !dcaResult) return

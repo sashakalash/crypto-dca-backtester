@@ -1,4 +1,4 @@
-import { useEffect, useRef, useMemo, memo } from 'react'
+import { useEffect, useRef, memo } from 'react'
 import { select } from 'd3-selection'
 import { scaleLinear, scaleBand } from 'd3-scale'
 import { max } from 'd3-array'
@@ -32,14 +32,12 @@ export const StrategyComparisonBar = memo(function StrategyComparisonBar() {
   const { width } = useResizeObserver(containerRef)
   const results = useResults()
 
-  const data = useMemo((): BarRow[] => {
-    return Array.from(results.entries()).map(([type, result]) => ({
-      strategy: LABELS[type],
-      type,
-      finalValue: result.metrics.finalValue,
-      returnPercent: result.metrics.totalReturnPercent,
-    }))
-  }, [results])
+  const data: BarRow[] = Array.from(results.entries()).map(([type, result]) => ({
+    strategy: LABELS[type],
+    type,
+    finalValue: result.metrics.finalValue,
+    returnPercent: result.metrics.totalReturnPercent,
+  }))
 
   useEffect(() => {
     if (!svgRef.current || width === 0 || data.length === 0) return

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useMemo, memo } from 'react'
+import { useEffect, useRef, memo } from 'react'
 import { select } from 'd3-selection'
 import { scaleLinear } from 'd3-scale'
 import { extent, max, range, bin } from 'd3-array'
@@ -17,19 +17,16 @@ export const ReturnDistribution = memo(function ReturnDistribution() {
   const { width } = useResizeObserver(containerRef)
   const results = useResults()
 
-  const returns = useMemo(() => {
-    const dca = results.get('dca') ?? results.values().next().value
-    if (!dca) return []
-
-    const periodicReturns: number[] = []
-    for (let i = 1; i < dca.timeline.length; i++) {
-      const prev = dca.timeline[i - 1].portfolioValue
+  const dca0 = results.get('dca') ?? results.values().next().value
+  const returns: number[] = []
+  if (dca0) {
+    for (let i = 1; i < dca0.timeline.length; i++) {
+      const prev = dca0.timeline[i - 1].portfolioValue
       if (prev > 0) {
-        periodicReturns.push(((dca.timeline[i].portfolioValue - prev) / prev) * 100)
+        returns.push(((dca0.timeline[i].portfolioValue - prev) / prev) * 100)
       }
     }
-    return periodicReturns
-  }, [results])
+  }
 
   useEffect(() => {
     if (!svgRef.current || width === 0 || returns.length < 10) return
